@@ -1,20 +1,15 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import { useState, useEffect } from "react";
 import { Login } from "./pages/Login";
 import { Register } from "./pages/Register";
 import { Home } from "./pages/Home";
-
-export interface Token {
-  user: {
-    user_metadata: {
-      full_name: string;
-    };
-  };
-}
+import { AuthTokenResponsePassword } from "@supabase/supabase-js";
 
 function App() {
-  const [token, setToken] = useState<Token | false>(false);
+  const [token, setToken] = useState<AuthTokenResponsePassword["data"] | false>(
+    false,
+  );
   if (token) {
     sessionStorage.setItem("token", JSON.stringify(token));
   }
