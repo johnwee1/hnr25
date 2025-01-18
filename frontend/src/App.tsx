@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Login } from "./pages/Login";
 import { Register } from "./pages/Register";
 import { Home } from "./pages/Home";
+import { CreateProfile } from "./pages/CreateProfile";
 import { AuthTokenResponsePassword } from "@supabase/supabase-js";
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
         {/* Public routes */}
         <Route path="/" element={<Login setToken={setToken} />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/createprofile" element={<CreateProfile />} />
         {token ? <Route path={"/home"} element={<Home token={token} />} /> : ""}
       </Routes>
     </BrowserRouter>
