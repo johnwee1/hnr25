@@ -1,11 +1,16 @@
 import React from "react";
 
-interface Profile {
-  id: string;
-  name: string;
+// this is copied from the supabase table
+export interface Profile {
   age: number;
-  bio: string;
-  market_value: number;
+  credits: number;
+  description: string;
+  genderid: number;
+  name: string;
+  photo: string;
+  price: number;
+  user_id: number;
+  user_id_text: string;
 }
 
 interface ProfileCardProps {
@@ -27,7 +32,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
           Market Value: ${profile.market_value}
         </p>
         <button
-          onClick={() => onSwipe(profile.id, profile.market_value)}
+          onClick={() => onSwipe(profile.user_id_text, profile.market_value)}
           className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
         >
           Swipe

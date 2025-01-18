@@ -2,15 +2,7 @@ import { AuthTokenResponsePassword } from "@supabase/supabase-js";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
-import { ProfileCard } from "../components/profile-card";
-
-interface Profile {
-  id: string;
-  name: string;
-  age: number;
-  bio: string;
-  market_value: number;
-}
+import { Profile, ProfileCard } from "../components/profile-card";
 
 export function Home({ token }: { token: AuthTokenResponsePassword["data"] }) {
   const [profiles, setProfiles] = useState<Profile[]>([]);
@@ -21,6 +13,8 @@ export function Home({ token }: { token: AuthTokenResponsePassword["data"] }) {
     fetchProfiles();
     fetchCredits();
   }, []);
+
+  console.log(profiles);
 
   const fetchProfiles = async () => {
     if (!token.user) {
@@ -123,20 +117,17 @@ export function Home({ token }: { token: AuthTokenResponsePassword["data"] }) {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-4">Home</h1>
-      <h3 className="text-xl mb-4">
-        Welcome back, {token.user!.user_metadata.full_name}
-      </h3>
+      <h3 className="text-xl mb-4">Welcome back! Let's find you a match...</h3>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {profiles.map((profile) => (
           <ProfileCard
-            key={profile.id}
+            key={profile.user_id_text}
             profile={profile}
             onSwipe={handleSwipe}
           />
         ))}
       </div>
-
     </div>
   );
 }
