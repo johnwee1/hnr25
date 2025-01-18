@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { handlePhotoUpload, PhotoDisplay } from "../components/photos";
+
 import {
   Card,
   CardContent,
@@ -198,6 +199,34 @@ export function CreateProfile({
     }
   };
 
+  const handlePhotoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const base64String = reader.result?.toString().split(",")[1]; // Get base64 string
+        if (!base64String) return;
+
+        // Save the base64 string in the database
+        const { error } = await supabase
+          .from("usertable")
+          .update({ photo: base64String })
+          .eq("user_id_text", token.user?.id);
+
+        if (error) {
+          console.error("Error uploading photo:", error);
+        } else {
+          setUserData((prev) => prev && { ...prev, photo: base64String });
+        }
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.error("Error handling photo upload:", error);
+    }
+  };
+
   return (
     <div className={className} {...props}>
       <Card>
@@ -207,22 +236,32 @@ export function CreateProfile({
         </CardHeader>
         <CardContent>
 
-            {/* START OF Display Photo */}
+            {userData.photo ? (
+              <div>
+                <strong>Photo:</strong>
+                <img
+                  src={`data:image/jpeg;base64,${userData.photo}`}
+                  alt="Profile"
+                  className="mt-2 w-32 h-32 object-cover"
+                />
+              </div>
+            ) : (
+              <p>No photo available.</p>
+            )}
 
-            <PhotoDisplay base64Photo={userData.photo} />
-
-            {/* END OF Display Photo */}
-
-            {/* START OF Upload Photo */}
-
-            <input
-              type="file"
-              id="photoUpload"
-              accept="image/*"
-              onChange={(e) => handlePhotoUpload(e, userId, setUserPhoto)}
-            />
-
-            {/* END OF Upload Photo */}
+            {/* Photo Upload */}
+            <div className="mt-4">
+              <label htmlFor="photoUpload" className="block font-medium">
+                Upload Photo:
+              </label>
+              <input
+                type="file"
+                id="photoUpload"
+                accept="image/*"
+                onChange={handlePhotoUpload}
+                className="mt-2"
+              />
+            </div>
 
           <p className="text-blue-500 text-sm pb-4">Click on the blue info to edit</p>
 
