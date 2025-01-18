@@ -29,16 +29,69 @@ export function Login({ className, setToken, ...props }: LoginFormProps) {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
+    console.log("Attempting to sign in with email:", email); // Log email
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
     if (error) {
+      console.error("Error signing in:", error); // Log error details
       alert("Error signing in: " + error.message);
     } else {
+      console.log("Sign in successful, token data:", data); // Log token data
       setToken(data);
-      navigate("/home");
+
+      // Check if user exists in the usertable and if user_id_text exists
+      const userId = data.user?.id;
+      console.log("Fetched user ID:", userId); // Log the user ID
+
+      if (!userId) {
+        console.error("No user ID found"); // Log error if no user ID
+        return;
+      }
+
+      const { data: userData, error: userError } = await supabase
+        .from("usertable")
+        .select("*")
+        .eq("user_id_text", userId)
+        .single();
+
+      if (userError) {
+        console.error("Error fetching user from usertable:", userError); // Log user error
+      }
+
+      if (userError && userError.code === "PGRST116") {
+        console.log("User does not exist in usertable, creating new row"); // Log if user doesn't exist
+        // User does not exist, create a new row
+        const { error: insertError } = await supabase
+          .from("usertable")
+          .insert([{ user_id_text: userId }]);
+
+        if (insertError) {
+          console.error("Error creating user:", insertError.message); // Log insert error
+          alert("Error creating user. Please try again.");
+          return;
+        }
+
+        console.log("New user created, redirecting to create-profile"); // Log successful user creation
+        // After creating user, redirect to create profile
+        navigate("/create-profile");
+      } else if (userData) {
+        // Check if name, age, gender, or description are null
+        const { name, age, genderid, description } = userData;
+        console.log("Fetched user data:", userData); // Log user data
+
+        if (!name || !age || !genderid || !description) {
+          console.log("Profile incomplete, redirecting to create-profile"); // Log incomplete profile
+          // Redirect to create-profile if any of the fields are null
+          navigate("/create-profile");
+        } else {
+          console.log("All profile fields filled, redirecting to home"); // Log if profile is complete
+          // All fields are filled, redirect to home
+          navigate("/home");
+        }
+      }
     }
   }
 
