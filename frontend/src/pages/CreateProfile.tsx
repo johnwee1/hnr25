@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
+import { handlePhotoUpload, PhotoDisplay } from "../components/photos";
 import {
   Card,
   CardContent,
@@ -205,6 +206,24 @@ export function CreateProfile({
           <CardDescription>View and edit your profile details below.</CardDescription>
         </CardHeader>
         <CardContent>
+
+            {/* START OF Display Photo */}
+
+            <PhotoDisplay base64Photo={userData.photo} />
+
+            {/* END OF Display Photo */}
+
+            {/* START OF Upload Photo */}
+
+            <input
+              type="file"
+              id="photoUpload"
+              accept="image/*"
+              onChange={(e) => handlePhotoUpload(e, userId, setUserPhoto)}
+            />
+
+            {/* END OF Upload Photo */}
+
           <p className="text-blue-500 text-sm pb-4">Click on the blue info to edit</p>
 
           <div className="profile-details space-y-4">
