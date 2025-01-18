@@ -32,7 +32,7 @@ export function Home({ token }: { token: AuthTokenResponsePassword["data"] }) {
     const { data, error } = await supabase
       .from("usertable")
       .select("*")
-      .neq("id", token.user.id)
+      .neq("user_id_text", token.user.id)
       .limit(10);
     if (error) console.error("Error fetching profiles:", error);
     else setProfiles(data || []);
@@ -45,7 +45,7 @@ export function Home({ token }: { token: AuthTokenResponsePassword["data"] }) {
     const { data, error } = await supabase
       .from("usertable")
       .select("credits")
-      .eq("user_id", token.user?.id)
+      .eq("user_id_text", token.user?.id)
       .single();
 
     if (error) {
