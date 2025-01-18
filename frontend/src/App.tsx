@@ -10,6 +10,7 @@ function App() {
   const [token, setToken] = useState<AuthTokenResponsePassword["data"] | false>(
     false,
   );
+  const [profileCompleted, setProfileCompleted] = useState(false);
   if (token) {
     sessionStorage.setItem("token", JSON.stringify(token));
   }
@@ -28,6 +29,7 @@ function App() {
         <Route path="/" element={<Login setToken={setToken} />} />
         <Route path="/register" element={<Register />} />
         {token ? <Route path={"/home"} element={<Home token={token} />} /> : ""}
+        {/* {token ? <Route path={"/swipe"} element={<Home token={token} />} /> : ""} */}
       </Routes>
     </BrowserRouter>
   );
