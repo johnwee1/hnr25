@@ -3,10 +3,28 @@ import { useState, useEffect, ReactNode } from "react";
 import { Login } from "./pages/Login";
 import { Register } from "./pages/Register";
 import { Home } from "./pages/Home";
+// import { CreateProfile } from "./pages/CreateProfile";
+import { Navbar } from "./components/ui/navbar";
 import { AuthTokenResponsePassword } from "@supabase/supabase-js";
 
 // Optional: Define a Loading component
 const Loading = () => <div>Loading...</div>;
+
+// Protected Layout Component that includes Navbar
+interface ProtectedLayoutProps {
+  children: ReactNode;
+}
+
+const ProtectedLayout = ({ children }: ProtectedLayoutProps) => {
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
+      <main className="pt-4">
+        {children}
+      </main>
+    </div>
+  );
+};
 
 // ProtectedRoute Component
 interface ProtectedRouteProps {
@@ -18,7 +36,7 @@ const ProtectedRoute = ({ token, children }: ProtectedRouteProps) => {
   if (!token) {
     return <Navigate to="/" replace />;
   }
-  return children;
+  return <ProtectedLayout>{children}</ProtectedLayout>;
 };
 
 // PublicRoute Component to Redirect Authenticated Users
@@ -82,12 +100,31 @@ function App() {
         {/* Public Route: Register */}
         <Route path="/register" element={<Register />} />
 
-        {/* Protected Route: Home */}
+        {/* Protected Routes */}
         <Route
           path="/home"
           element={
             <ProtectedRoute token={token}>
               <Home token={token} />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute token={token}>
+              {/* <CreateProfile token={token} /> */}
+              <Home token={token} />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/matches"
+          element={
+            <ProtectedRoute token={token}>
+              <div>Matches Page</div>
             </ProtectedRoute>
           }
         />
