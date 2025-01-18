@@ -5,6 +5,7 @@ import { Register } from "./pages/Register";
 import { Home } from "./pages/Home";
 import { CreateProfile } from "./pages/CreateProfile";  // Import CreateProfile
 import { AuthTokenResponsePassword } from "@supabase/supabase-js";
+import { Navbar } from "./components/ui/navbar";
 
 // Optional: Define a Loading component
 const Loading = () => <div>Loading...</div>;
@@ -120,11 +121,10 @@ function App() {
         />
 
         <Route
-          path="/profile"
+          path="/create-profile"
           element={
             <ProtectedRoute token={token}>
-              {/* <CreateProfile token={token} /> */}
-              <Home token={token} />
+              <CreateProfile token={token} />
             </ProtectedRoute>
           }
         />

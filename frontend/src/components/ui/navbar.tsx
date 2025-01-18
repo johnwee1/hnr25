@@ -5,7 +5,7 @@ export function Navbar() {
   
   const navItems = [
     { path: '/', label: 'Home' },
-    { path: '/profile', label: 'Profile' },
+    { path: '/create-profile', label: 'Profile' },
     { path: '/matches', label: 'Matches' },
   ];
 
@@ -37,7 +37,7 @@ export function Navbar() {
                 sessionStorage.removeItem("token");
                 window.location.reload();
               }}
-              className="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-red-500 hover:text-red-700"
+              className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded mb-8"
             >
               Logout
             </button>

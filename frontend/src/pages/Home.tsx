@@ -126,12 +126,6 @@ export function Home({ token }: { token: AuthTokenResponsePassword["data"] }) {
       <h3 className="text-xl mb-4">
         Welcome back, {token.user!.user_metadata.full_name}
       </h3>
-      <button
-        onClick={handleLogout}
-        className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded mb-8"
-      >
-        Logout
-      </button>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {profiles.map((profile) => (
@@ -143,14 +137,6 @@ export function Home({ token }: { token: AuthTokenResponsePassword["data"] }) {
         ))}
       </div>
 
-      <div className="mt-8">
-        <button
-          onClick={handleCreateProfile}
-          className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
-        >
-          Edit Profile
-        </button>
-      </div>
     </div>
   );
 }
