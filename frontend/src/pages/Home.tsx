@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { ProfileCard } from "../components/profile-card";
-// import { addAbortSignal } from "node:stream";
 
 interface Profile {
   id: string;
@@ -36,12 +35,9 @@ export function Home({ token }: { token: AuthTokenResponsePassword["data"] }) {
       .limit(10);
     if (error) console.error("Error fetching profiles:", error);
     else setProfiles(data || []);
-
-    console.log(data);
   };
 
   const fetchCredits = async () => {
-    // Example fetch function for credits, replace with your logic
     const { data, error } = await supabase
       .from("usertable")
       .select("credits")
@@ -53,8 +49,6 @@ export function Home({ token }: { token: AuthTokenResponsePassword["data"] }) {
     } else {
       setCredits(data?.credits || 0);
     }
-
-    console.log(data);
   };
 
   const handleSwipe = async (swipedOnId: string, cost: number) => {
@@ -63,7 +57,6 @@ export function Home({ token }: { token: AuthTokenResponsePassword["data"] }) {
       return;
     }
 
-    // Insert into swipe table
     const { error: swipeError } = await supabase.from("swipes").insert({
       swiper_id: token.user?.id,
       swiped_on_id: swipedOnId,
@@ -75,7 +68,6 @@ export function Home({ token }: { token: AuthTokenResponsePassword["data"] }) {
       return;
     }
 
-    // Minus credits
     const { error: creditError } = await supabase
       .from("usertable")
       .update({ credits: credits - cost })
@@ -87,52 +79,34 @@ export function Home({ token }: { token: AuthTokenResponsePassword["data"] }) {
       setCredits(credits - cost);
     }
 
-    // Check for a match
     const { data: matchData, error: matchError } = await supabase
       .from("swipetable")
       .select("*")
-      .eq("swiper_id", swipedOnId) // Check if the swiped user swiped back on the current user
+      .eq("swiper_id", swipedOnId)
       .eq("swiped_on_id", token.user?.id);
 
     if (matchError) {
       console.error("No match: ", matchError);
     } else if (matchData && matchData.length > 0) {
-      alert("It's a match! 🎉"); // Notify the user of the match
+      alert("It's a match! 🎉");
 
-      // Update Match Table
-      const { data: matchData, error: matchError } = await supabase
+      const newMatch = {
+        match_id: Date.now(),
+        user1_id: token.user?.id,
+        user2_id: swipedOnId,
+        match_date: new Date().toISOString(),
+      };
+
+      const { error: insertError } = await supabase
         .from("matchestables")
-        .select("*")
-        .eq("swiper_id", swipedOnId) // Check if the swiped user swiped back on the current user
-        .eq("swiped_on_id", token.user?.id);
+        .insert(newMatch);
 
-      if (matchError) {
-        console.error("Error while assigning match: ", matchError);
-      } else if (matchData && matchData.length > 0) {
-        alert("It's a match! 🎉"); // Notify the user of the match
-
-        const newMatch = {
-          match_id: Date.now(), // Use a timestamp as a unique ID (or replace with your custom logic)
-          user1_id: token.user?.id, // Current user
-          user2_id: swipedOnId, // Swiped user
-          match_date: new Date().toISOString(), // Current timestamp
-        };
-
-        const { error: insertError } = await supabase
-          .from("matchestables")
-          .insert(newMatch);
-
-        if (insertError) {
-          console.error("Error while inserting new match: ", insertError);
-        } else {
-          console.log("Match successfully recorded: ", newMatch);
-        }
-
-        // Further Action, show socials etc etc
-        //
+      if (insertError) {
+        console.error("Error while inserting new match: ", insertError);
+      } else {
+        console.log("Match successfully recorded: ", newMatch);
       }
 
-      // Refresh Profiles
       fetchProfiles();
     }
   };
@@ -141,6 +115,10 @@ export function Home({ token }: { token: AuthTokenResponsePassword["data"] }) {
     sessionStorage.removeItem("token");
     window.location.reload();
   }
+
+  const handleCreateProfile = () => {
+    navigate("/create-profile");
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -160,9 +138,18 @@ export function Home({ token }: { token: AuthTokenResponsePassword["data"] }) {
           <ProfileCard
             key={profile.id}
             profile={profile}
-            onSwipe={handleSwipe} // Pass the required `onSwipe` prop
+            onSwipe={handleSwipe}
           />
         ))}
+      </div>
+
+      <div className="mt-8">
+        <button
+          onClick={handleCreateProfile}
+          className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+        >
+          Edit Profile
+        </button>
       </div>
     </div>
   );
