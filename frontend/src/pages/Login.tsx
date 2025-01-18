@@ -21,6 +21,7 @@ interface LoginFormProps extends React.ComponentPropsWithoutRef<"div"> {
 }
 
 export function Login({ className, setToken, ...props }: LoginFormProps) {
+  console.log("login page render");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();

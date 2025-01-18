@@ -39,7 +39,7 @@ export function Register({
       setError(error.message);
     } else {
       alert("Check your email address for verification");
-      navigate("/login");
+      navigate("/");
     }
   };
 
