@@ -3,7 +3,7 @@ import { useState, useEffect, ReactNode } from "react";
 import { Login } from "./pages/Login";
 import { Register } from "./pages/Register";
 import { Home } from "./pages/Home";
-import { CreateProfile } from "./pages/CreateProfile";  // Import CreateProfile
+import { CreateProfile } from "./pages/CreateProfile"; // Import CreateProfile
 import { AuthTokenResponsePassword } from "@supabase/supabase-js";
 import { Navbar } from "./components/ui/navbar";
 
@@ -19,9 +19,7 @@ const ProtectedLayout = ({ children }: ProtectedLayoutProps) => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <main className="pt-4">
-        {children}
-      </main>
+      <main className="pt-4">{children}</main>
     </div>
   );
 };
@@ -54,7 +52,7 @@ const PublicRoute = ({ token, children }: PublicRouteProps) => {
 
 function App() {
   const [token, setToken] = useState<AuthTokenResponsePassword["data"] | false>(
-    false
+    false,
   );
   const [isLoading, setIsLoading] = useState(true); // Optional: Add loading state
 
@@ -99,16 +97,6 @@ function App() {
 
         {/* Public Route: Register */}
         <Route path="/register" element={<Register />} />
-
-        {/* Public Route: Create Profile (can be public if user is not logged in) */}
-        <Route
-          path="/create-profile"
-          element={
-            <ProtectedRoute token={token}>
-              <CreateProfile token={token} />
-            </ProtectedRoute>
-          }
-        />
 
         {/* Protected Routes */}
         <Route
