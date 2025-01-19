@@ -5,11 +5,15 @@ import { Register } from "./pages/Register";
 import { Home } from "./pages/Home";
 import { Matches } from "./pages/Matches";
 import { CreateProfile } from "./pages/CreateProfile"; // Import CreateProfile
-import { AuthTokenResponsePassword } from "@supabase/supabase-js";
+import { AuthTokenResponsePassword } from "@supabase/sAupabase-js";
 import { Navbar } from "./components/ui/navbar";
+import LoadingAnimation from "./components/loading";
 
 // Optional: Define a Loading component
-const Loading = () => <div>Loading...</div>;
+const Loading = () => 
+<div className="flex justify-center items-center h-screen">
+  <LoadingAnimation />
+</div>
 
 // Protected Layout Component that includes Navbar
 interface ProtectedLayoutProps {

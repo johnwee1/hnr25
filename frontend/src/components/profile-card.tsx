@@ -48,7 +48,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({ profile, onSwipe }) =>
         {/* Default View - Name Only */}
         <div className="absolute bottom-0 left-0 p-4 w-full">
           <h2 className="text-xl font-semibold text-white drop-shadow-lg">
-            {profile.name}
+            {profile.name}, {profile.age}
           </h2>
         </div>
 

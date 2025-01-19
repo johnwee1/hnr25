@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { handlePhotoUpload, PhotoDisplay } from "../components/photos";
+import LoadingAnimation from "../components/loading";
 
 import {
   Card,
@@ -162,7 +163,11 @@ useEffect(() => {
   }, [token]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <LoadingAnimation />
+      </div>
+    ); 
   }
 
   if (!userData) {
