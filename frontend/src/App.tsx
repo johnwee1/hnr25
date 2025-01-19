@@ -3,6 +3,7 @@ import { useState, useEffect, ReactNode } from "react";
 import { Login } from "./pages/Login";
 import { Register } from "./pages/Register";
 import { Home } from "./pages/Home";
+import { Matches } from "./pages/Matches";
 import { CreateProfile } from "./pages/CreateProfile"; // Import CreateProfile
 import { AuthTokenResponsePassword } from "@supabase/supabase-js";
 import { Navbar } from "./components/ui/navbar";
@@ -121,7 +122,7 @@ function App() {
           path="/matches"
           element={
             <ProtectedRoute token={token}>
-              <div>Matches Page</div>
+              <Matches token={token} />
             </ProtectedRoute>
           }
         />
