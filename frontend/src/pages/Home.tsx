@@ -46,64 +46,96 @@ export function Home({ token }: { token: AuthTokenResponsePassword["data"] }) {
   };
 
   const handleSwipe = async (swipedOnId: string, cost: number) => {
+    console.log("Handling swipe...", { swipedOnId, cost, credits });
+  
     if (credits < cost) {
+      console.log("Not enough credits!");
       alert("Not enough credits!");
       return;
     }
-
-    const { error: swipeError } = await supabase.from("swipes").insert({
-      swiper_id: token.user?.id,
-      swiped_on_id: swipedOnId,
-      cost: cost,
+  
+    console.log("Inserting swipe into swipes table...");
+    const { error: swipeError } = await supabase.from("swipetable").insert({
+      swiper_id_text: token.user?.id,
+      swipedon_id_text: swipedOnId,
     });
-
+  
     if (swipeError) {
       console.error("Error recording swipe:", swipeError);
       return;
+    } else {
+      console.log("Swipe successfully recorded.");
     }
-
+  
+    console.log("Updating user credits...");
     const { error: creditError } = await supabase
       .from("usertable")
       .update({ credits: credits - cost })
-      .eq("user_id", token.user?.id);
-
+      .eq("user_id_text", token.user?.id);
+  
     if (creditError) {
       console.error("Error updating credits:", creditError);
     } else {
+      console.log(`Credits updated. Remaining credits: ${credits - cost}`);
       setCredits(credits - cost);
     }
-
+  
+    console.log("Checking for a match...");
     const { data: matchData, error: matchError } = await supabase
       .from("swipetable")
       .select("*")
-      .eq("swiper_id", swipedOnId)
-      .eq("swiped_on_id", token.user?.id);
-
+      .eq("swiper_id_text", swipedOnId)
+      .eq("swipedon_id_text", token.user?.id);
+  
     if (matchError) {
-      console.error("No match: ", matchError);
+      console.error("Error checking for match: ", matchError);
     } else if (matchData && matchData.length > 0) {
+      console.log("It's a match! 🎉");
       alert("It's a match! 🎉");
-
+  
       const newMatch = {
         match_id: Date.now(),
-        user1_id: token.user?.id,
-        user2_id: swipedOnId,
+        user1_id_text: token.user?.id,
+        user2_id_text: swipedOnId,
         match_date: new Date().toISOString(),
       };
-
-      const { error: insertError } = await supabase
-        .from("matchestables")
-        .insert(newMatch);
-
-      if (insertError) {
-        console.error("Error while inserting new match: ", insertError);
-      } else {
-        console.log("Match successfully recorded: ", newMatch);
+  
+      console.log("Checking if match already exists...");
+      const { data: existingMatch, error: matchCheckError } = await supabase
+        .from("matchestable")
+        .select("user1_id_text, user2_id_text")
+        .or(
+          `and(user1_id_text.eq.${newMatch.user1_id_text},user2_id_text.eq.${newMatch.user2_id_text}),and(user1_id_text.eq.${newMatch.user2_id_text},user2_id_text.eq.${newMatch.user1_id_text})`
+        );
+      
+      if (matchCheckError) {
+        console.error("Error checking for existing match: ", matchCheckError);
+        return;
       }
-
+      
+      if (existingMatch && existingMatch.length > 0) {
+        console.log("Match already exists, skipping insert.");
+      } else {
+        console.log("Inserting new match into matchestable...", newMatch);
+        const { error: insertError } = await supabase
+          .from("matchestable")
+          .insert(newMatch);
+      
+        if (insertError) {
+          console.error("Error while inserting new match: ", insertError);
+        } else {
+          console.log("Match successfully recorded: ", newMatch);
+        }
+      }
+      
+  
+      console.log("Fetching profiles again...");
       fetchProfiles();
+    } else {
+      console.log("No match found.");
     }
   };
+  
 
   function handleLogout() {
     sessionStorage.removeItem("token");
